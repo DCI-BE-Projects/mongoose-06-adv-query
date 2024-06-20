@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Search</title>
+    <style>
+        label, button {
+            display: block;
+            margin: 1em;
+        }
+        table {
+            border-collapse: collapse;
+            margin: 1em;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- const { currentPage = 1, sortBy = 'createdAt', sortDirection = 'asc', maxPrice } = req.query -->
+
+    <label>
+        Sort By
+        <select id="sortBy">
+            <option value="createdAt">Created At</option>
+            <option value="price">Price</option>
+            <option value="name">Name</option>
+        </select>
+    </label>
+    <label>
+        Sort Direction
+        <select id="sortDirection">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+        </select>
+    </label>
+    <label>
+        Max Price
+        <input type="number" name="maxPrice" id="maxPrice" />
+    </label>
+    <button>Search</button>
+
+    <table>
+        <thead>
+            <th>Price</th>
+            <th>Name</th>
+            <th>Created At</th>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <input name="currentPage" id="currentPage" value="1" />
+
+    <script>
+        const button = document.querySelector('button');
+
+        button.addEventListener('click', async () => {
+            const currentPage = document.querySelector('#currentPage').value;
+            const maxPrice = document.querySelector('#maxPrice').value;
+            const sortBy = document.querySelector('#sortBy').value;
+            const sortDirection = document.querySelector('#sortDirection').value;
+            const tbody = document.querySelector('tbody');
+
+            const url = `http://localhost:4000/products?currentPage=${currentPage}&sortBy=${sortBy}&sortDirection=${sortDirection}&maxPrice=${maxPrice}`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            let html = '';
+            data.forEach(product => {
+                html += `
+                    <tr>
+                        <td>${product.price}</td>
+                        <td>${product.name}</td>
+                        <td>${product.createdAt}</td>
+                    </tr>
+                `
+            })
+
+            tbody.innerHTML = html;
+        } );
+
+        currentPage.addEventListener('change', () => button.click())
+    </script>
+</body>
+</html>
